@@ -2,20 +2,12 @@ import ess
 import thinkstats2
 import thinkplot
 import numpy as np
-import csv
+import utils
 
 # SETUP
-def getCodeList(csvpath):
-	res = []
-	with open(csvpath) as csvfile:
-		reader = csv.reader(csvfile, delimiter=',')
-		for row in reader:
-			res += row
-	return res
-
 df = ess.read()
-skip = getCodeList('data/codeinfo/skip.csv')
-forceHist = getCodeList('data/codeinfo/forceHist.csv')
+skip = utils.getCodeList('data/codeinfo/skip.csv')
+forceHist = utils.getCodeList('data/codeinfo/forceHist.csv')
 
 
 # MAIN FUNCTIONS
