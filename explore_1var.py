@@ -45,5 +45,14 @@ def eisced():
 	cdf3 = thinkstats2.Cdf(df.eiscedm, label='mother')
 
 	thinkplot.Cdfs([cdf0, cdf1, cdf2, cdf3])
-	thinkplot.Show()
-	thinkplot.Save('explore/eisced_all_cdf', formats=['jpg'])
+	#thinkplot.Show()
+	thinkplot.Save('plots/oneVar/eisced_all_cdf', formats=['jpg'])
+
+def rlgdnm():
+	cdf0 = thinkstats2.Hist(df.rlgdnm, label='current')
+	cdf1 = thinkstats2.Hist(df.rlgdnme, label='past')
+
+	thinkplot.Hist(cdf0, width=0.4, align='right')
+	thinkplot.Hist(cdf1, width=0.4, align='left')
+	#thinkplot.Show()
+	thinkplot.Save('plots/oneVar/rlgdnm_all_hist', formats=['jpg'])

@@ -39,22 +39,22 @@ class _Brewer(object):
     """
     color_iter = None
 
-    colors = ['#081D58',
-              '#253494',
-              '#225EA8',
-              '#1D91C0',
-              '#41B6C4',
-              '#7FCDBB',
-              '#C7E9B4',
-              '#EDF8B1',
-              '#FFFFD9']
+    #colors = ['#081D58',
+    #          '#253494',
+    #          '#225EA8',
+    #          '#1D91C0',
+    #          '#41B6C4',
+    #          '#7FCDBB',
+    #          '#C7E9B4',
+    #          '#EDF8B1',
+    #          '#FFFFD9']
 
-    #colors = ['#1b9e77',
-    #          '#d95f02',
-    #          '#7570b3',
-    #          '#e7298a',
-    #          '#66a61e',
-    #          '#e6ab02']
+    colors = ['#1b9e77',
+              '#d95f02',
+              '#7570b3',
+              '#e7298a',
+              '#66a61e',
+              '#e6ab02']
 
     # lists that indicate which colors to use depending on how many are used
     which_colors = [[],
