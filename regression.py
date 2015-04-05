@@ -1,17 +1,39 @@
 import ess
 import statsmodels.formula.api as smf
 import pandas as pd
+import numpy as np
+import thinkplot
 
 df = ess.read()
 df['jewish'] = (df.rlgdnm==5).astype(int)
 
 
-def regr1():
-	formula = 'jewish ~ happy + stflife + lrscale + eduyrs + sclmeet + ipshabt + ipsuces + imprich + impfun + rlgatnd'
-	clf(formula)
+def plotAll(show=False):
+	# get formulas
+	formula1 = 'jewish ~ happy + stflife + lrscale + eduyrs + sclmeet + ipshabt + ipsuces + imprich + impfun + rlgatnd'
+	formula2 = splitScaleFormula()
+
+	# make classifiers
+	clf1 = Clf(formula1, 'scales')
+	clf2 = Clf(formula2, 'binaries')
+
+	# summaries
+	clf1.summary()
+	clf2.summary()
+	
+	# plot
+	clf1.roc()
+	clf2.roc()
+
+	thinkplot.Config(axis=[0,1,0,1], xlabel='Fall out', ylabel='Sensitivity', title='ROC curve', legend=True)
+
+	if show:
+		thinkplot.Show()
+	else:
+		thinkplot.Save('plots/regression/roc', formats=['jpg'])
 
 
-def regr2():
+def splitScaleFormula():
 	# already ready to use
 	fitCols = ['eduyrs']
 
@@ -32,35 +54,94 @@ def regr2():
 				fitCols.append(newCode)
 
 	formula = 'jewish ~ ' + ' + '.join(fitCols)
-	clf(formula)
+	return formula
 
-
-def clf(formula):
-	model = smf.logit(formula, data=df) # Logit object
-	results = model.fit() # BinaryResults object
-	#print results.summary()
-
-	endog = pd.DataFrame(model.endog, columns=[model.endog_names])
-	exog = pd.DataFrame(model.exog, columns=model.exog_names)
-
-	# Accuracy of model
-	predict = (results.predict() >= 0.5)
-	actual = endog['jewish']
-
-	true_pos = predict*actual
-	true_neg = (1-predict) * (1-actual)
-	false_pos = predict*(1-actual)
-	false_neg = (1-predict) * actual
-
-	acc = (sum(true_pos) + sum(true_neg))/len(actual)
-
-	sens = sum(true_pos)/sum(actual)
-	fall = sum(false_pos)/(len(actual) - sum(actual))
-	fnr = sum(false_neg)/sum(actual)
-	spec = sum(true_neg)/(len(actual) - sum(actual))
 	
-	print 'Accuracy: ' + str(acc)
-	print 'Sensitivity: ' + str(sens)
-	print 'Fall-out: ' + str(fall)
-	print 'FNR: ' + str(fnr)
-	print 'Specificity: ' + str(spec)
+class Clf:
+	def __init__(self, formula, label=None):
+		self.formula = formula
+		self.model = smf.logit(formula, data=df) # Logit object
+		self.results = self.model.fit() # BinaryResults object
+		self.probabilities = self.results.predict()
+		self.endog = pd.DataFrame(self.model.endog, columns=[self.model.endog_names])
+		self.exog = pd.DataFrame(self.model.exog, columns=self.model.exog_names)
+		self.label = label
+
+	def summary(self):
+		print self.results.summary()
+
+	def evaluation(self, threshold=0.5):
+		predicted = (results.predict() >= threshold)
+		actual = endog.jewish
+		ce = ClfEval(predicted, actual)
+		ce.report()
+
+	def roc(self, thresholds=np.linspace(0,1,100)):
+		# over threshold sweep, collect false alarm rates & probabilities of detection
+		false_alarm = []
+		prob_detection = []
+		for t in thresholds:
+			# evaluate classifier
+			predicted = pd.Series((self.probabilities > t).astype(int))
+			actual = self.endog.jewish
+			ce = ClfEval(predicted, actual)
+
+			# collect relevant stats
+			false_alarm.append(ce.fallout)
+			prob_detection.append(ce.sensitivity)
+
+		# approximate area under curve (trapezoidal Riemann sum)
+		area = 0
+		for i in range(1, len(thresholds)):
+			# note: moving left on roc as you increase threshold
+
+			# right point
+			rfa = false_alarm[i-1]
+			rpd = prob_detection[i-1]
+
+			# left point
+			lfa = false_alarm[i]
+			lpd = prob_detection[i]
+
+			# trapezoid geometry
+			b = rfa-lfa # width of trapezoid
+			h = (lpd+rpd)/2.0 # average height
+			a = b*h
+
+			area += a
+
+		area = str(round(area, 3))
+
+		# plot (thinkplot collects)
+		if self.label:
+			thinkplot.Plot(false_alarm, prob_detection, label=self.label + ': ' + area)
+		else:
+			thinkplot.Plot(false_alarm, prob_detection, label=area)
+	
+
+class ClfEval:
+	def __init__(self, predicted, actual):
+		self.predicted = predicted
+		self.actual = actual
+
+		self.tp = sum(predicted*actual) # true positives
+		self.tn = sum((1-predicted) * (1-actual)) # true negatives
+		self.fp = sum(predicted*(1-actual)) # false positives
+		self.fn = sum((1-predicted) * actual) # false negatives
+		self.count = len(actual) # number of responses
+		self.cp = sum(actual) # condition positives
+		self.cn = self.count - self.cp # condition negatives
+
+		self.accuracy = (self.tp + self.tn)/float(self.count)
+
+		self.sensitivity = self.tp/float(self.cp)
+		self.fallout = self.fp/float(self.cn)
+		self.false_neg_rate = self.fn/float(self.cp)
+		self.specificity = self.tn/float(self.cn)
+
+	def report(self):
+		print 'Accuracy: ' + str(self.accuracy)
+		print 'Sensitivity: ' + str(self.sensitivity)
+		print 'Fall-out: ' + str(self.fallout)
+		print 'FNR: ' + str(self.false_neg_rate)
+		print 'Specificity: ' + str(self.specificity)
