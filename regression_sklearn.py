@@ -69,6 +69,7 @@ def clfSweep(dh, clfs, clfTags, show=False):
 	fams = []
 	pdms = []
 
+	cl='rgbycmk' # color order
 	for i, clf in enumerate(clfs):
 		print clfTags[i]
 
@@ -108,26 +109,18 @@ def clfSweep(dh, clfs, clfTags, show=False):
 		fam = np.array(fa).mean(0) # stack arrays in list up and take average at each index
 		pdm = np.array(pd).mean(0)
 
-		fams += [fam]
-		pdms += [pdm]
-
-	cl='rgbycmk' # color order
-	for j in range(len(fams)):
-		fam = fams[j]
-		pdm = pdms[j]
-
 		# find area
 		area = 0
-		for k in range(1, len(fam)):
+		for j in range(1, len(fam)):
 			# note: moving left on roc as you increase threshold
 
 			# right point
-			rfa = fam[k-1]
-			rpd = pdm[k-1]
+			rfa = fam[j-1]
+			rpd = pdm[j-1]
 
 			# left point
-			lfa = fam[k]
-			lpd = pdm[k]
+			lfa = fam[j]
+			lpd = pdm[j]
 
 			# trapezoid geometry
 			b = rfa-lfa # width of trapezoid
@@ -138,6 +131,12 @@ def clfSweep(dh, clfs, clfTags, show=False):
 
 		area = str(round(area, 3))
 		pl.plot(fam, pdm, cl[j%7], label=clfTags[j] + ' ' + dh.label + ': ' + area, lw=2, zorder=1)
+
+	for j in range(len(fams)):
+		fam = fams[j]
+		pdm = pdms[j]
+
+		
 	
 	pl.legend(loc='lower right')
 	pl.xlabel('False alarm rate')
