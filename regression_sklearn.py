@@ -12,15 +12,11 @@ from sklearn.qda import QDA
 
 gbrt = GradientBoostingClassifier()
 log = linear_model.LogisticRegression()
-dec = DecisionTreeClassifier()
 ada = AdaBoostClassifier()
 nb = GaussianNB()
 lda = LDA()
 lin = linear_model.LinearRegression()
-knn = KNeighborsClassifier()
-svc = SVC()
 qda = QDA()
-rfc = RandomForestClassifier()
 # http://scikit-learn.org/stable/modules/classes.html#module-sklearn.ensemble
 
 clfs = [gbrt, ada, qda, log, lda, nb, lin,]
@@ -66,8 +62,6 @@ def prepare_ndarrays():
 
 def clfSweep(dh, clfs, clfTags, show=False):
 	pl.clf()
-	fams = []
-	pdms = []
 
 	cl='rgbycmk' # color order
 	for i, clf in enumerate(clfs):
@@ -130,13 +124,7 @@ def clfSweep(dh, clfs, clfTags, show=False):
 			area += a
 
 		area = str(round(area, 3))
-		pl.plot(fam, pdm, cl[j%7], label=clfTags[j] + ' ' + dh.label + ': ' + area, lw=2, zorder=1)
-
-	for j in range(len(fams)):
-		fam = fams[j]
-		pdm = pdms[j]
-
-		
+		pl.plot(fam, pdm, cl[i%7], label=clfTags[i] + ' ' + dh.label + ': ' + area, lw=2, zorder=1)		
 	
 	pl.legend(loc='lower right')
 	pl.xlabel('False alarm rate')
