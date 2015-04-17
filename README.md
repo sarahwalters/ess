@@ -1,7 +1,7 @@
-## External dependencies:
+## External dependencies: (todo: install instructions)
 * numpy
 * pandas
-(todo: installation commands)
+
 
 ## To run:
 ```
