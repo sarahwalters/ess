@@ -40,7 +40,7 @@ class DiffMeansPermute(thinkstats2.HypothesisTest):
 
 def plotAll(show=False):
     #for col in scales:
-    for col in ['happy', 'stflife', 'lrscale', 'eduyrs', 'sclmeet', 'ipshabt', 'ipsuces', 'imprich', 'impfun', 'rlgatnd', 'pray', 'imptrad']:
+    for col in ['happy', 'stflife', 'lrscale', 'eduyrs', 'sclmeet', 'ipshabt', 'ipsuces', 'imprich', 'impfun', 'rlgatnd', 'pray', 'imptrad', 'netuse']:
         data = (jewish[col].dropna().values, other[col].dropna().values)
         dmp = DiffMeansPermute(data)
         p_value = dmp.PValue(iters=1000)
