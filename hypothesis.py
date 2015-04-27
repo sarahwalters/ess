@@ -5,8 +5,8 @@ import numpy as np
 import utils
 
 df = ess.read()
-jewish = df[df.rlgdnm == 5]
-other = df[df.rlgdnm != 5]
+df.rlgdnm.fillna(value=0, inplace=True) # assuming NaN == not religious
+unaffiliated = df[df.rlgdnm == 0] # unaffiliated
 scales = utils.getCodeList('data/codeinfo/scales.csv')
 
 # from ThinkStats2
@@ -39,21 +39,27 @@ class DiffMeansPermute(thinkstats2.HypothesisTest):
         return data
 
 def plotAll(show=False):
+    rlgLookup = [(1, 'Catholic'), (2, 'Protestant'), (5, 'Jewish'), (6, 'Islamic')]
+    rlgdfs = [df[df.rlgdnm==tup[0]] for tup in rlgLookup]
+    rlglabels = [tup[1] for tup in rlgLookup]
+
     #for col in scales:
-    for col in ['happy', 'stflife', 'lrscale', 'eduyrs', 'sclmeet', 'ipshabt', 'ipsuces', 'imprich', 'impfun', 'rlgatnd', 'pray', 'imptrad', 'netuse']:
-        data = (jewish[col].dropna().values, other[col].dropna().values)
-        dmp = DiffMeansPermute(data)
-        p_value = dmp.PValue(iters=1000)
-        dmp.PlotCdf()
+    for i, rlgdf in enumerate(rlgdfs):
+        rlglabel = rlglabels[i]
+        for col in ['happy', 'stflife', 'lrscale', 'eduyrs', 'sclmeet', 'ipshabt', 'ipsuces', 'imprich', 'impfun', 'rlgatnd', 'pray', 'imptrad', 'netuse']:
+            data = (rlgdf[col].dropna().values, unaffiliated[col].dropna().values)
+            dmp = DiffMeansPermute(data)
+            p_value = dmp.PValue(iters=1000)
+            dmp.PlotCdf()
 
-        title = 'P-value'
-        if (p_value < 0.001):
-            title += ' < 0.001'
-        else:
-            title += ': ' + str(round(p_value, 4))
-        thinkplot.Config(xlabel=col + ' under Jewish == other null hypothesis', ylabel='CDF', title=title)
+            title = 'P-value'
+            if (p_value < 0.001):
+                title += ' < 0.001'
+            else:
+                title += ': ' + str(round(p_value, 4))
+            thinkplot.Config(xlabel=col + ' under ' + rlglabel + ' == unaffiliated null hypothesis', ylabel='CDF', title=title)
 
-        if show:
-            thinkplot.Show()
-        else:
-            thinkplot.Save('plots/hypothesis/diffMeans/'+col, formats=['jpg'])
+            if show:
+                thinkplot.Show()
+            else:
+                thinkplot.Save('plots/hypothesis/diffMeans/'+col+'_'+rlglabel, formats=['jpg'])

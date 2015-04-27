@@ -174,7 +174,13 @@ def _Underride(d, **options):
 def Clf():
     """Clears the figure and any hints that have been set."""
     global LOC
+    global BBOX
+    global HTSCALE
+    global XLIM
     LOC = None
+    BBOX = None
+    HTSCALE = None
+    XLIM = None
     _Brewer.ClearIter()
     pyplot.clf()
     fig = pyplot.gcf()
@@ -584,6 +590,9 @@ def Text(x, y, s, **options):
 
 LEGEND = True
 LOC = None
+BBOX = None
+HTSCALE = None
+XLIM = None
 
 def Config(**options):
     """Configures the plot.
@@ -616,8 +625,25 @@ def Config(**options):
 
     if LEGEND:
         global LOC
+        global BBOX
+        global HTSCALE
+        global XLIM
+        
         LOC = options.get('loc', LOC)
-        pyplot.legend(loc=LOC)
+        
+        XLIM = options.get('xlim', XLIM)
+        if XLIM:
+            pyplot.xlim(XLIM)
+
+        BBOX = options.get('bbox_to_anchor', BBOX)
+        lgd = pyplot.legend(loc=LOC, bbox_to_anchor=BBOX)
+
+        HTSCALE = options.get('htscale', HTSCALE)
+        if HTSCALE:
+            ax = pyplot.subplot(111)
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0 + box.height * (1-HTSCALE),
+                     box.width, box.height * HTSCALE])
 
 
 def Show(**options):

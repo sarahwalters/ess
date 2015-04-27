@@ -39,7 +39,7 @@ def plotDf(df=df, name='all'):
 	# close the file
 	sf.close()
 
-def plotHexbin(col0, col1, show=False, df=df, sf=allFile, folder='plots/twoVar/all'):
+def plotHexbin(col0, col1, show=False, df=df, sf='plots/twoVar/all/summary.txt', folder='plots/twoVar/all'):
 	print (col0, col1)
 
 	jit0 = thinkstats2.Jitter(df[col0], 0.5)
