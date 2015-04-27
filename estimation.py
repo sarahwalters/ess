@@ -7,8 +7,7 @@ import math
 import utils
 
 df = ess.read()
-df.rlgdnm.fillna(value=0, inplace=True) # assuming NaN == not religious
-unaffiliated = df[df.rlgdnm == 0] # unaffiliated
+unaffiliated = df[df.rlgblg == 2] # unaffiliated
 scales = utils.getCodeList('data/codeinfo/scales.csv')
 values = utils.getCodeList('data/codeinfo/values.csv')
 
@@ -65,15 +64,16 @@ def estimateDiffMeans(col, rlgdf, rlglabel, n=10, m=1000, show=False):
 	savepath = 'plots/estimation/diffMeans/' + col + '_' + rlglabel
 
 	# run "experiments"
-	est = GaussianEstimate(mu, sigma, m, n, xlabel, savepath)
+	est = GaussianEstimate(mu, sigma, m, n, xlabel, savepath, rlg=rlglabel)
 	est.plot(show=show)
 
 	return est
 
 
 class GaussianEstimate:
-	def __init__(self, mu, sigma, m, n, xlabel, savepath):
+	def __init__(self, mu, sigma, m, n, xlabel, savepath, rlg='All'):
 		# labels
+		self.rlg = rlg
 		self.xlabel = xlabel
 		self.savepath = savepath
 
@@ -93,13 +93,13 @@ class GaussianEstimate:
 		self.confInt = self.samplingCdf.ConfidenceInterval()
 
 		# for displaying nicely
-		self.printMean = 'Sample mean: ' + str(round(mu,3))
-		self.printConfInt = 'Confidence interval: [' + str(round(self.confInt[0], 3)) + ', ' + str(round(self.confInt[1], 3)) + ']'
-		self.printSE = 'Standard error: ' + str(round(RMSE(self.means, mu), 3))
+		self.printMean = 'Mean ' + str(round(mu,3))
+		self.printConfInt = 'CI [' + str(round(self.confInt[0], 3)) + ', ' + str(round(self.confInt[1], 3)) + ']'
+		self.printSE = 'SE ' + str(round(RMSE(self.means, mu), 3))
 
 		# give cdf proper label
-		self.title = self.printMean + ' \n ' + self.printConfInt + ' , ' + self.printSE
-		self.samplingCdf.label = self.title
+		self.title = self.printMean + ', ' + self.printConfInt + ', ' + self.printSE
+		self.samplingCdf.label = self.rlg + ': ' + self.title
 
 	
 	def plot(self, show=False):
@@ -120,10 +120,13 @@ class GaussianEstimate:
 
 
 def diffMeansPlot(col, diffMeansEsts, show=False):
-	thinkplot.Config(xlabel='Estimated religious/unaffiliated diff in means of ' + col, ylabel='CDF', loc='lower center', bbox_to_anchor=(0.5, -0.6), htscale=0.825)
+	thinkplot.Clf()
+
 	if col in values:
 		thinkplot.Config(xlim=(-1.25,1.25))
 
+	thinkplot.Config(xlabel='Estimated religious/unaffiliated diff in means of ' + col, ylabel='CDF', legend=True, loc='lower center', bbox_to_anchor=(0.5, -0.6), htscale=0.825)
+	
 	samplingCdfs = [est.samplingCdf for est in diffMeansEsts]
 	thinkplot.Cdfs(samplingCdfs)
 
