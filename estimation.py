@@ -30,13 +30,6 @@ def plotAll():
 		# plot all diff means together
 		diffMeansPlot(col, diffMeansEsts)
 
-def debug():
-	rlgLookup = [(1, 'Catholic'), (2, 'Protestant'), (5, 'Jewish'), (6, 'Islamic')]
-	rlgdfs = [df[df.rlgdnm==tup[0]] for tup in rlgLookup]
-	rlglabels = [tup[1] for tup in rlgLookup]
-
-	estimateMean('ipcrtiv')
-
 
 def estimateMean(col, n=10, m=1000, show=False):
 	# get data
