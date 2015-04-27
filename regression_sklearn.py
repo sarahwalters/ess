@@ -1,6 +1,7 @@
 import ess
 import numpy as np
 from matplotlib import pyplot as pl
+from sklearn.grid_search import GridSearchCV
 from sklearn import cross_validation, preprocessing, linear_model
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
@@ -135,6 +136,18 @@ def clfSweep(dh, clfs, clfTags, show=False):
 		pl.show()
 	else:
 		pl.savefig('plots/regression/clfsweep-'+dh.label+'.jpg')
+
+
+def gridSearch():
+	(s, b) = prepare_ndarrays()
+	tuned_parameters = [{'learning_rate': [0.2, 0.4, 0.6, 0.8, 1], 'n_estimators': [100, 200, 300, 400, 500], 'max_depth': [3, 4, 5, 6, 7]}]
+	X_train, X_test, y_train, y_test = cross_validation.train_test_split(s.x, s.y, train_size=.9)
+
+	model = GridSearchCV(GradientBoostingClassifier(), tuned_parameters, cv=5)
+	model.fit(X_train, y_train)
+
+	print model.best_estimator_
+	print model.score(X_test, y_test)
 
 
 class DataHandler:
