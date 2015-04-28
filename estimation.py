@@ -123,7 +123,7 @@ def diffMeansPlot(col, diffMeansEsts, show=False):
 	thinkplot.Clf()
 
 	if col in values:
-		thinkplot.Config(xlim=(-1.25,1.25))
+		thinkplot.Config(xlim=(-1.25,1.25)) # keep all value axes consistent
 
 	thinkplot.Config(xlabel='Estimated religious/unaffiliated diff in means of ' + col, ylabel='CDF', legend=True, loc='lower center', bbox_to_anchor=(0.5, -0.6), htscale=0.825)
 	
