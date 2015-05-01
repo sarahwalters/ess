@@ -8,7 +8,7 @@ import utils
 df = ess.read()
 skip = utils.getCodeList('data/codeinfo/skip.csv')
 forceHist = utils.getCodeList('data/codeinfo/forceHist.csv')
-forcePmf = utils.getCodeList('data/codeinfo/centeredValuesScale.csv')
+forcePmf = utils.getCodeList('data/codeinfo/centeredValues.csv')
 
 
 # MAIN FUNCTIONS
