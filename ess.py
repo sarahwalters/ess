@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 import csv
+import utils
+
+values = utils.getCodeList('data/codeinfo/values.csv')
 
 def test(csvpath='data/ess.csv'):
 	return pd.read_csv(csvpath)
@@ -25,5 +28,14 @@ def read(csvpath='data/ess.csv'):
 	for col in df.columns.values:
 		if 'Unnamed' in col:
 			df.drop(col, axis=1, inplace=True)
+
+	df.dropna(subset=values, inplace=True)
+
+	# center the values
+	# http://www.europeansocialsurvey.org/docs/methodology/ESS1_human_values_scale.pdf
+	valuesdf = df[values] # just the human values columns
+	df['mrat'] = valuesdf.sum(axis=1)/21 
+	for value in values:
+		df[value+'_c'] = df[value] - df.mrat	
 
 	return df
