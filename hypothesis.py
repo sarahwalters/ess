@@ -7,7 +7,8 @@ import utils
 df = ess.read()
 df.rlgdnm.fillna(value=0, inplace=True) # assuming NaN == not religious
 unaffiliated = df[df.rlgdnm == 0] # unaffiliated
-scales = utils.getCodeList('data/codeinfo/scales.csv')
+centeredValues = utils.getCodeList('data/codeinfo/centeredValues.csv')
+
 
 # from ThinkStats2
 class DiffMeansPermute(thinkstats2.HypothesisTest):
@@ -43,10 +44,9 @@ def plotAll(show=False):
     rlgdfs = [df[df.rlgdnm==tup[0]] for tup in rlgLookup]
     rlglabels = [tup[1] for tup in rlgLookup]
 
-    #for col in scales:
     for i, rlgdf in enumerate(rlgdfs):
         rlglabel = rlglabels[i]
-        for col in ['happy', 'stflife', 'lrscale', 'eduyrs', 'sclmeet', 'ipshabt', 'ipsuces', 'imprich', 'impfun', 'rlgatnd', 'pray', 'imptrad', 'netuse']:
+        for col in centeredValues:
             data = (rlgdf[col].dropna().values, unaffiliated[col].dropna().values)
             dmp = DiffMeansPermute(data)
             p_value = dmp.PValue(iters=1000)

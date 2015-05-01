@@ -3,7 +3,7 @@ import explore_2var
 import estimation
 import hypothesis
 
-packages = [explore_1var, explore_2var, estimation, hypothesis]
+packages = [explore_1var, estimation, hypothesis]
 
 def run():
 	for pkg in packages:
