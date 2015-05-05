@@ -34,7 +34,7 @@ def plotCdf(col, forcePmf=False, show=False):
 	else:
 		thinkplot.Save('plots/oneVar/' + col + '_cdf', formats=['jpg'])
 
-	if forcePmf:
+	if forcePmf:		
 		# create histogram with 0.1-wide bins
 		binStart = int(10*df[col].min())/10.0
 		binStop = int(10*df[col].max()+1)/10.0
@@ -59,7 +59,8 @@ def plotCdf(col, forcePmf=False, show=False):
 
 		# plot
 		thinkplot.Clf()
-		thinkplot.Config(xticks=np.linspace(-5,5,11), xlim=(-5,5), xlabel=col + ', centered', ylabel='Frequency', title='Distribution of ' + col, legend=False)
+		mean = str(round(df[col].mean(),3))
+		thinkplot.Config(xticks=np.linspace(-5,5,11), xlim=(-5,5), xlabel=col + ', centered', ylabel='Frequency', title='Distribution of ' + col + '\nMean: ' + mean, legend=False)
 		pmf = thinkstats2.Hist(hist, label=col)
 		thinkplot.Hist(pmf)
 		if show:
@@ -70,7 +71,8 @@ def plotCdf(col, forcePmf=False, show=False):
 
 def plotHist(col, show=False):
 	hist = thinkstats2.Hist(df[col], label=col)
-	thinkplot.Config(xlabel=col, ylabel='Frequency', title='Distribution of ' + col, legend=False)
+	mean = str(round(df[col].mean(),3))
+	thinkplot.Config(xlabel=col, ylabel='Frequency', title='Distribution of ' + col + '\nMean: ' + mean, legend=False)
 	thinkplot.Hist(hist)
 	if show:
 		thinkplot.Show()
