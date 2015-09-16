@@ -36,7 +36,6 @@ def idealCountry():
 		fit = compareProportions(info.props)
 		fits.append((cntry,fit,len(subdf)))
 	fits.sort(key=lambda tup: tup[1])
-	topCountry = fits[0][0]
 
 	# print all fits
 	addedChars = len(' ()  ')
@@ -60,9 +59,19 @@ def idealCountry():
 	print 'Overall:'
 	print totalInfo
 	print '---'
-	print topCountry + ' (' + countries[topCountry] + '):'
-	print rlgProportions(gp.get_group(topCountry))
-	print '---'
+	for fit in fits:
+		country = fit[0]
+		print country + ' (' + countries[country] + '):'
+		print rlgProportions(gp.get_group(country))
+		print '---'
+
+
+def countrySet(countries):
+	# filter df down
+	selector = (df.cntry == countries.pop())
+	while len(countries) > 0:
+		selector = selector | (df.cntry == countries.pop())
+	print rlgProportions(df[selector])
 
 
 def compareProportions(props):

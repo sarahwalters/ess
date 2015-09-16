@@ -2644,6 +2644,19 @@ def Resample(xs, n=None):
         n = len(xs)
     return np.random.choice(xs, n, replace=True)
 
+def ResampleWeighted(xs, weights):
+    """Draws a sample from xs using probabilities proportional to weights.
+
+    xs: sequence
+    weights: sequence of corresponding weights
+
+    returns: NumPy array
+    """
+    cdf = Cdf(dict(weights))
+    indices = cdf.Sample(len(weights))
+    sample = xs[indices]
+    return sample
+
 
 def SampleRows(df, nrows, replace=False):
     """Choose a sample of rows from a DataFrame.
@@ -2669,7 +2682,7 @@ def ResampleRows(df):
     return SampleRows(df, len(df), replace=True)
 
 
-def ResampleRowsWeighted(df, column='finalwgt'):
+def ResampleRowsWeighted(df, column='weights'):
     """Resamples a DataFrame using probabilities proportional to given column.
 
     df: DataFrame

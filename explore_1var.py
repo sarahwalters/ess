@@ -27,7 +27,8 @@ def plotAll():
 
 def plotCdf(col, forcePmf=False, show=False):
 	cdf = thinkstats2.Cdf(df[col], label=col)
-	thinkplot.Config(xlabel=col + ', centered', ylabel='CDF', title='Cumulative distribution of ' + col, legend=False)
+	mean = str(round(df[col].mean(),3))
+	thinkplot.Config(xlabel=col + ', centered', ylabel='CDF', title='Cumulative distribution of ' + col + '\nMean: ' + mean, legend=False)
 	thinkplot.Cdf(cdf)
 	if show:
 		thinkplot.Show()
@@ -60,9 +61,9 @@ def plotCdf(col, forcePmf=False, show=False):
 		# plot
 		thinkplot.Clf()
 		mean = str(round(df[col].mean(),3))
-		thinkplot.Config(xticks=np.linspace(-5,5,11), xlim=(-5,5), xlabel=col + ', centered', ylabel='Frequency', title='Distribution of ' + col + '\nMean: ' + mean, legend=False)
-		pmf = thinkstats2.Hist(hist, label=col)
-		thinkplot.Hist(pmf)
+		thinkplot.Config(xticks=np.linspace(-5,7,13), xlim=(0,7), xlabel=col + ', centered', ylabel='Frequency', title='Distribution of ' + col + '\nMean: ' + mean, legend=False)
+		pmf = thinkstats2.Pmf(hist, label=col)
+		thinkplot.Pmf(pmf)
 		if show:
 			thinkplot.Show()
 		else:

@@ -49,4 +49,10 @@ def read(csvpath='data/ess.csv'):
 	for value in values:
 		df[value+'_c'] = df[value] - df.mrat	
 
+	#westernEurope = ['CH','DE','BE','NL','FR','LU','AT']
+	#selector = (df.cntry == westernEurope.pop())
+	#while len(westernEurope) > 0:
+	#	selector = selector | (df.cntry == westernEurope.pop())
+	#df = df[selector]
+
 	return df
